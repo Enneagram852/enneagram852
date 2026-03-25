@@ -2,68 +2,89 @@
 <html>
 <head>
   <title>Enneagram Guide</title>
-  <style>
-    body {
-      font-family: Georgia, serif;
-      background: #f7f5f2;
-      display: flex;
-      justify-content: center;
-      padding: 60px 20px;
-      color: #2f2f2f;
-    }
+ <style>
+  body {
+    font-family: Georgia, serif;
+    background: #f7f5f2;
+    margin: 0;
+    padding: 0;
+    color: #2f2f2f;
+  }
 
+  .container {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  h2 {
+    font-weight: normal;
+    margin-bottom: 20px;
+    font-size: 22px;
+  }
+
+  #chat {
+    margin-bottom: 20px;
+    min-height: 300px;
+  }
+
+  .message {
+    margin-bottom: 15px;
+    line-height: 1.6;
+    font-size: 16px;
+  }
+
+  .user {
+    text-align: right;
+    color: #555;
+  }
+
+  .ai {
+    text-align: left;
+    color: #2f2f2f;
+  }
+
+  input {
+    width: 100%;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    background: transparent;
+    outline: none;
+    box-sizing: border-box;
+  }
+
+  button {
+    width: 100%;
+    margin-top: 12px;
+    padding: 16px;
+    background: #2f2f2f;
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    opacity: 0.85;
+  }
+
+  @media (min-width: 768px) {
     .container {
-      width: 100%;
-      max-width: 500px;
+      padding: 40px;
     }
 
     h2 {
-      font-weight: normal;
-      margin-bottom: 20px;
-    }
-
-    #chat {
-      margin-bottom: 20px;
+      font-size: 26px;
     }
 
     .message {
-      margin-bottom: 15px;
-      line-height: 1.6;
+      font-size: 18px;
     }
-
-    .user {
-      text-align: right;
-      color: #555;
-    }
-
-    .ai {
-      text-align: left;
-      color: #2f2f2f;
-    }
-
-    input {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-bottom: 1px solid #ccc;
-      background: transparent;
-      font-size: 16px;
-      outline: none;
-    }
-
-    button {
-      margin-top: 10px;
-      padding: 10px 20px;
-      background: #2f2f2f;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-
-    button:hover {
-      opacity: 0.8;
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
 
