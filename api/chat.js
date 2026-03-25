@@ -3,9 +3,7 @@ export default async function handler(req, res) {
     const { message } = req.body || {};
 
     if (!message) {
-      return res.status(200).json({
-        reply: "Hello 👋 Send me a message to begin your enneagram exploration."
-      });
+      return res.status(400).json({ reply: "No message received" });
     }
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -19,7 +17,7 @@ export default async function handler(req, res) {
         messages: [
           {
             role: "system",
-            content: "You are an insightful Enneagram coach. Ask thoughtful questions to understand the user's motivations, fears, and behaviors."
+            content: "You are a thoughtful Enneagram coach. Ask reflective, insightful questions."
           },
           {
             role: "user",
@@ -31,11 +29,16 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    res.status(200).json({
+    console.log("OPENAI RESPONSE:", data);
+
+    return res.status(200).json({
       reply: data.choices?.[0]?.message?.content || "No response"
     });
 
   } catch (error) {
-    res.status(500).json({ error: "Something went wrong", details: error.message });
+    console.error("ERROR:", error);
+    return res.status(500).json({
+      reply: "Error talking to AI"
+    });
   }
 }
