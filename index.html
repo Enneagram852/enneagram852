@@ -1,1 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Enneagram AI Chat</title>
+</head>
+<body>
 
+<h2>Enneagram AI Chat</h2>
+
+<input id="input" placeholder="Type your message..." />
+<button onclick="sendMessage()">Send</button>
+
+<div id="chat"></div>
+
+<script>
+async function sendMessage() {
+  const input = document.getElementById("input");
+  const chat = document.getElementById("chat");
+
+  const userMessage = input.value;
+
+  if (!userMessage) return;
+
+  chat.innerHTML += "<p><b>You:</b> " + userMessage + "</p>";
+
+  try {
+    const response = await fetch("https://enneagram852.vercel.app/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ message: userMessage })
+    });
+
+    const data = await response.json();
+
+    chat.innerHTML += "<p><b>AI:</b> " + data.reply + "</p>";
+  } catch (error) {
+    chat.innerHTML += "<p><b>Error:</b> Something went wrong</p>";
+  }
+
+  input.value = "";
+}
+</script>
+
+</body>
+</html>
