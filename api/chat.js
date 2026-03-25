@@ -4,7 +4,7 @@ export default function handler(req, res) {
   let reply = "";
 
   if (!message) {
-    reply = "Start wherever feels true...";
+    reply = "Tell me something about yourself that you've never quite known how to explain to other people...";
   }
 
   else if (
