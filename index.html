@@ -77,31 +77,36 @@
 </div>
 
 <script>
-async function sendMessage() {
+function sendMessage() {
   const input = document.getElementById("input");
   const chat = document.getElementById("chat");
 
   const userMessage = input.value;
-  console.log("Sending:", userMessage);
 
   if (!userMessage) return;
 
-  chat.innerHTML += `<div class="message user">${userMessage}</div>`;
+  console.log("Sending:", userMessage);
 
-  const response = await fetch("/api/chat", {
+  chat.innerHTML += '<div class="message user">' + userMessage + '</div>';
+
+  fetch("/api/chat", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({ message: userMessage })
+  })
+  .then(response => response.json())
+  .then(data => {
+    chat.innerHTML += '<div class="message ai">' + data.reply + '</div>';
+    chat.scrollTop = chat.scrollHeight;
+  })
+  .catch(error => {
+    console.error("Error:", error);
   });
 
-  const data = await response.json();
-
-  chat.innerHTML += `<div class="message ai">${data.reply}</div>`;
-
   input.value = "";
-  chat.scrollTop = chat.scrollHeight;
+}
 </script>
 
 </body>
