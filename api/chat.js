@@ -9,13 +9,11 @@ function sendMessage() {
 
   if (!userMessage) return;
 
-  // 👉 REMOVE welcome message on first input
   if (firstMessage) {
     chat.innerHTML = "";
     firstMessage = false;
   }
 
-  // add user message
   chat.innerHTML += '<div class="message user">' + userMessage + '</div>';
 
   fetch("/api/chat", {
