@@ -2,19 +2,15 @@
 <html>
 <head>
   <title>Enneagram Guide</title>
-
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
-
   <style>
     body {
       margin: 0;
       font-family: Avenir, Arial, sans-serif;
       color: #2f2f2f;
-
       background: url('https://raw.githubusercontent.com/Enneagram852/enneagram852/main/labyrinth.png') no-repeat center center fixed;
       background-size: cover;
     }
-
     .overlay {
       background: rgba(255,255,255,0.75);
       min-height: 100vh;
@@ -23,7 +19,6 @@
       justify-content: center;
       padding: 20px;
     }
-
     .container {
       width: 100%;
       max-width: 600px;
@@ -32,41 +27,44 @@
       border-radius: 16px;
       box-shadow: 0 10px 40px rgba(0,0,0,0.08);
     }
-
     h2 {
       font-family: 'Playfair Display', serif;
       font-size: 28px;
       margin-bottom: 20px;
     }
-
     p {
       line-height: 1.6;
       margin-bottom: 20px;
     }
-
     #chat {
       margin-bottom: 20px;
       min-height: 120px;
     }
-
     .message {
       margin-bottom: 10px;
       padding: 10px 14px;
       border-radius: 12px;
       max-width: 80%;
     }
-
     .user {
       background: #f1efec;
       margin-left: auto;
       text-align: right;
     }
-
     .ai {
       background: #f7f5f2;
       text-align: left;
     }
-
+    .input-wrapper {
+      position: relative;
+      margin-bottom: 4px;
+    }
+    #input-label {
+      font-size: 13px;
+      color: #999;
+      display: none;
+      margin-bottom: 6px;
+    }
     input {
       width: 100%;
       padding: 14px;
@@ -75,8 +73,13 @@
       background: transparent;
       font-size: 16px;
       outline: none;
+      box-sizing: border-box;
+      transition: border-bottom-color 0.2s, background 0.2s;
     }
-
+    input:focus {
+      border-bottom: 1.5px solid #2f2f2f;
+      background: #faf9f7;
+    }
     button {
       width: 100%;
       margin-top: 12px;
@@ -88,84 +91,27 @@
       border-radius: 8px;
       cursor: pointer;
     }
-
     button:hover {
       opacity: 0.85;
     }
   </style>
 </head>
-
 <body>
-
 <div class="overlay">
   <div class="container">
-
     <h2>Explore your Enneagram Type</h2>
-
     <p>
       Have you ever wondered why you see the world the way you do?<br>
       Or why the same patterns keep showing up in your life?<br>
       The Enneagram offers a way to understand why.<br><br>
       Curious? Start a conversation below.
     </p>
-
     <div id="chat">
       <div class="message ai">
-        Hi — I’m glad you’re here.<br><br>
+        Hi — I'm glad you're here.<br><br>
         What would you like to explore?
       </div>
     </div>
-
-    <input id="input" placeholder="Start wherever feels natural..." />
-    <button onclick="sendMessage()">Continue</button>
-
-  </div>
-</div>
-
-<script>
-let firstMessage = true;
-
-function sendMessage() {
-  const input = document.getElementById("input");
-  const chat = document.getElementById("chat");
-  const welcome = document.getElementById("welcome");
-
-const userMessage = input.value.trim();
-if (firstMessage) input.placeholder = "";
-
-  if (!userMessage) return;
-
-  // remove ONLY welcome message
-  if (firstMessage && welcome) {
-    welcome.remove();
-    firstMessage = false;
-  }
-
-  const userDiv = document.createElement("div");
-  userDiv.className = "message user";
-  userDiv.textContent = userMessage;
-  chat.appendChild(userDiv);
-
-  fetch("/api/chat", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ message: userMessage })
-  })
-  .then(res => res.json())
-  .then(data => {
-    const aiDiv = document.createElement("div");
-    aiDiv.className = "message ai";
-    aiDiv.textContent = data.reply;
-    chat.appendChild(aiDiv);
-
-    chat.scrollTop = chat.scrollHeight;
-  });
-
-  input.value = "";
-}
-</script>
-
-</body>
-</html>
+    <div id="input-label">Continue the conversation</div>
+    <div class="input-wrapper">
+      <input id="input" placeholder="Start wherever feels natural..." onkeydown="if(event.key=
