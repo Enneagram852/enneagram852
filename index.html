@@ -15,9 +15,9 @@
       background: rgba(255,255,255,0.75);
       min-height: 100vh;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
-      padding: 20px;
+      padding: 40px 20px;
     }
     .container {
       width: 100%;
@@ -26,6 +26,8 @@
       padding: 30px;
       border-radius: 16px;
       box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+      overflow: visible;
+      box-sizing: border-box;
     }
     h2 {
       font-family: 'Playfair Display', serif;
@@ -54,10 +56,6 @@
     .ai {
       background: #f7f5f2;
       text-align: left;
-    }
-    .input-wrapper {
-      position: relative;
-      margin-bottom: 4px;
     }
     #input-label {
       font-size: 13px;
@@ -113,5 +111,46 @@
       </div>
     </div>
     <div id="input-label">Continue the conversation</div>
-    <div class="input-wrapper">
-      <input id="input" placeholder="Start wherever feels natural..." onkeydown="if(event.key=
+    <input id="input" placeholder="Start wherever feels natural..." onkeydown="if(event.key==='Enter') sendMessage()" />
+    <button onclick="sendMessage()">Continue</button>
+  </div>
+</div>
+<script>
+let firstMessage = true;
+
+function sendMessage() {
+  const input = document.getElementById("input");
+  const chat = document.getElementById("chat");
+  const userMessage = input.value.trim();
+  if (!userMessage) return;
+
+  if (firstMessage) {
+    firstMessage = false;
+    input.placeholder = "Your turn...";
+    document.getElementById("input-label").style.display = "block";
+  }
+
+  const userDiv = document.createElement("div");
+  userDiv.className = "message user";
+  userDiv.textContent = userMessage;
+  chat.appendChild(userDiv);
+
+  fetch("/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: userMessage })
+  })
+  .then(res => res.json())
+  .then(data => {
+    const aiDiv = document.createElement("div");
+    aiDiv.className = "message ai";
+    aiDiv.textContent = data.reply;
+    chat.appendChild(aiDiv);
+    chat.scrollTop = chat.scrollHeight;
+  });
+
+  input.value = "";
+}
+</script>
+</body>
+</html>
