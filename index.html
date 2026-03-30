@@ -11,13 +11,12 @@
       font-family: Avenir, Arial, sans-serif;
       color: #2f2f2f;
 
-      background: url('https://github.com/Enneagram852/enneagram852/blob/main/labyrinth.png') no-repeat center center fixed;
+      background: url('https://raw.githubusercontent.com/Enneagram852/enneagram852/main/labyrinth.png') no-repeat center center fixed;
       background-size: cover;
     }
 
-    /* soft fade overlay */
     .overlay {
-      background: rgba(255, 255, 255, 0.75);
+      background: rgba(255,255,255,0.75);
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -47,7 +46,7 @@
 
     #chat {
       margin-bottom: 20px;
-      min-height: 150px;
+      min-height: 120px;
     }
 
     .message {
@@ -110,9 +109,14 @@
       Curious? Start a conversation below.
     </p>
 
-    <div id="chat"></div>
+    <div id="chat">
+      <div class="message ai">
+        Hi — I’m glad you’re here.<br><br>
+        What would you like to explore?
+      </div>
+    </div>
 
-    <input id="input" placeholder="What led you here?" />
+    <input id="input" placeholder="Start wherever feels natural..." />
     <button onclick="sendMessage()">Continue</button>
 
   </div>
@@ -140,9 +144,6 @@ function sendMessage() {
   .then(data => {
     chat.innerHTML += '<div class="message ai">' + data.reply + '</div>';
     chat.scrollTop = chat.scrollHeight;
-  })
-  .catch(error => {
-    console.error("Error:", error);
   });
 
   input.value = "";
