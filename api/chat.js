@@ -3,8 +3,9 @@ export default function handler(req, res) {
   const { message } = req.body || {};
   let reply = "";
 
-  if (!message) {
-  let reply = `${message}… what stands out to you about that?`;
+  // FIRST RESPONSE (for any first input)
+  if (message) {
+    reply = "That’s helpful. There’s usually a pattern underneath this — I’ll guide you through it.\n\nWhere do you notice this showing up most in your life?";
   }
 
   else if (
@@ -20,9 +21,9 @@ export default function handler(req, res) {
   }
 
   else if (message.includes("feel") || message.includes("feeling") || message.includes("emotional")) {
-  reply = "I notice you're speaking from a feeling place. Often this connects to how we experience ourselves through emotion and relationship. When you feel this, is it more about how you feel inside, or how you are seen by others?";
-  } 
-  
+    reply = "I notice you're speaking from a feeling place. Often this connects to how we experience ourselves through emotion and relationship. When you feel this, is it more about how you feel inside, or how you are seen by others?";
+  }
+
   else if (message.includes("fear") || message.includes("anxious") || message.includes("worry")) {
     reply = "I’m hearing something connected to fear or anxiety. When this shows up, what are you usually trying to prepare for or avoid?";
   }
