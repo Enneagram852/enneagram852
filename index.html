@@ -130,7 +130,8 @@ function sendMessage() {
   const chat = document.getElementById("chat");
   const welcome = document.getElementById("welcome");
 
-  const userMessage = input.value.trim();
+const userMessage = input.value.trim();
+if (firstMessage) input.placeholder = "";
 
   if (!userMessage) return;
 
