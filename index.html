@@ -128,13 +128,15 @@ let firstMessage = true;
 function sendMessage() {
   const input = document.getElementById("input");
   const chat = document.getElementById("chat");
+  const welcome = document.getElementById("welcome");
 
   const userMessage = input.value.trim();
 
   if (!userMessage) return;
 
-  if (firstMessage) {
-    chat.innerHTML = "";
+  // remove ONLY welcome message
+  if (firstMessage && welcome) {
+    welcome.remove();
     firstMessage = false;
   }
 
