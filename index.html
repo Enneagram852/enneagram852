@@ -123,15 +123,25 @@
 </div>
 
 <script>
+let firstMessage = true;
+
 function sendMessage() {
   const input = document.getElementById("input");
   const chat = document.getElementById("chat");
 
-  const userMessage = input.value;
+  const userMessage = input.value.trim();
 
   if (!userMessage) return;
 
-  chat.innerHTML += '<div class="message user">' + userMessage + '</div>';
+  if (firstMessage) {
+    chat.innerHTML = "";
+    firstMessage = false;
+  }
+
+  const userDiv = document.createElement("div");
+  userDiv.className = "message user";
+  userDiv.textContent = userMessage;
+  chat.appendChild(userDiv);
 
   fetch("/api/chat", {
     method: "POST",
@@ -140,9 +150,13 @@ function sendMessage() {
     },
     body: JSON.stringify({ message: userMessage })
   })
-  .then(response => response.json())
+  .then(res => res.json())
   .then(data => {
-    chat.innerHTML += '<div class="message ai">' + data.reply + '</div>';
+    const aiDiv = document.createElement("div");
+    aiDiv.className = "message ai";
+    aiDiv.textContent = data.reply;
+    chat.appendChild(aiDiv);
+
     chat.scrollTop = chat.scrollHeight;
   });
 
