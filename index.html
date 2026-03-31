@@ -26,27 +26,34 @@
       padding: 30px;
       border-radius: 16px;
       box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-      overflow: visible;
       box-sizing: border-box;
     }
     h2 {
       font-family: 'Playfair Display', serif;
-      font-size: 28px;
-      margin-bottom: 20px;
+      font-size: 26px;
+      margin-bottom: 16px;
+      line-height: 1.3;
     }
-    p {
-      line-height: 1.6;
-      margin-bottom: 20px;
+    .intro {
+      line-height: 1.7;
+      margin-bottom: 24px;
+      color: #444;
+      font-size: 15px;
+    }
+    .intro p {
+      margin: 0 0 10px 0;
     }
     #chat {
       margin-bottom: 20px;
-      min-height: 120px;
+      min-height: 80px;
     }
     .message {
-      margin-bottom: 10px;
-      padding: 10px 14px;
+      margin-bottom: 12px;
+      padding: 12px 16px;
       border-radius: 12px;
-      max-width: 80%;
+      max-width: 85%;
+      line-height: 1.6;
+      font-size: 15px;
     }
     .user {
       background: #f1efec;
@@ -56,6 +63,10 @@
     .ai {
       background: #f7f5f2;
       text-align: left;
+    }
+    .ai a {
+      color: #2f2f2f;
+      text-decoration: underline;
     }
     #input-label {
       font-size: 13px;
@@ -89,67 +100,208 @@
       border-radius: 8px;
       cursor: pointer;
     }
-    button:hover {
-      opacity: 0.85;
+    button:hover { opacity: 0.85; }
+    .typing {
+      display: inline-block;
+      padding: 10px 16px;
+      background: #f7f5f2;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      font-size: 20px;
+      letter-spacing: 2px;
     }
   </style>
 </head>
 <body>
 <div class="overlay">
   <div class="container">
-    <h2>Explore your Enneagram Type</h2>
-    <p>
-      Have you ever wondered why you see the world the way you do?<br>
-      Or why the same patterns keep showing up in your life?<br>
-      The Enneagram offers a way to understand why.<br><br>
-      Curious? Start a conversation below.
-    </p>
+    <h2>Why do the same patterns keep showing up in your life?</h2>
+    <div class="intro">
+      <p>Have you ever wondered why you keep ending up in the same situations no matter how hard you try to change? Why the same feelings show up, the same conflicts, the same exhaustion?</p>
+      <p>That's not bad luck. That's a pattern. And patterns have a root.</p>
+      <p>This is not a test. There are no right or wrong answers. Just a conversation — at your own pace — that might show you something you've never seen before.</p>
+      <p>Whenever you're ready, start below.</p>
+    </div>
+
     <div id="chat">
       <div class="message ai">
-        Hi — I'm glad you're here.<br><br>
-        What would you like to explore?
+        I'm glad you're here.<br><br>
+        Before we begin — have you come across the Enneagram before, or taken any kind of test? There's no right answer, it just helps me know where to start with you.
       </div>
     </div>
+
     <div id="input-label">Continue the conversation</div>
     <input id="input" placeholder="Start wherever feels natural..." onkeydown="if(event.key==='Enter') sendMessage()" />
     <button onclick="sendMessage()">Continue</button>
   </div>
 </div>
+
 <script>
 let firstMessage = true;
+let conversationState = 'opening';
+let userNumber = '';
+
+// ── RESPONSE LIBRARY ──────────────────────────────────────────────
+
+const responses = {
+
+  // They HAVE done the test
+  hasDoneTest: `And how do you feel about being typed as a [number]? Does it feel like you, or does some part of you resist it?`,
+
+  hasDoneTestNoNumber: `And how do you feel about the number you got? Does it feel like you, or does some part of you resist it?`,
+
+  // Response 1 — loves their number
+  lovesNumber: `That's great — and I want to ask you two things about that. What is it about being that type that really speaks to you? And is there anything about it that doesn't quite feel right, or that you find yourself explaining away?`,
+
+  // Response 2 — not sure
+  notSure: `That's completely normal — and actually it's a good sign. It means you're thinking about this honestly rather than just accepting a label. The Enneagram is not a fixed description of who you are. It's a map of what drives you underneath. Shall we explore what does and doesn't fit and see what that tells us?`,
+
+  // Response 3 — doesn't think it's right
+  doesntFit: `That's worth paying attention to. Sometimes we reject our type because it misses us completely — and sometimes because it hits something we're not quite ready to look at yet. Which of those feels closer to the truth for you?`,
+
+  // Response 4 — doesn't care about the number
+  doesntCare: `I love that — and I'm going to take you at your word. If you really want to understand yourself better, the best place to start is not a number. It's your fear. Not the fear of spiders or heights — but the deeper fear. The one that quietly runs the show. The one that lives somewhere in your body right now. Can you feel it?`,
+
+  // They have NOT done the test
+  hasNotDoneTest: `Since you're coming in fresh — that's actually a great place to be. You have two options.\n\nYou can start by taking a test at <a href="https://www.truity.com/test/enneagram-personality-test/?a=5782855" target="_blank">Truity</a> — it will give you a number to work with and we can explore it together from there.\n\nOr you can skip the test entirely and download my <a href="https://drive.google.com/file/d/1f2Q7jUUKV5dQDDtGIBVjy11pqcqo8q8t/view?usp=sharing" target="_blank">Fearless You guide</a>, which is designed to help you build the emotional muscle of self awareness before we go any deeper.\n\nWhich one feels right for you?`,
+
+  // They choose Truity
+  choosesTruity: `Perfect — head over to <a href="https://www.truity.com/test/enneagram-personality-test/?a=5782855" target="_blank">Truity here</a> and take the test. Come back when you have your number and we'll explore it together. Take your time — there's no rush.`,
+
+  // They choose the guide
+  choosesGuide: `Wonderful — you can download the <a href="https://drive.google.com/file/d/1f2Q7jUUKV5dQDDtGIBVjy11pqcqo8q8t/view?usp=sharing" target="_blank">Fearless You guide here</a>. Sit with it, take your time, and come back whenever you feel ready. This is your journey — move at your own pace.`,
+
+  // Fear response — they can feel it
+  feelsFear: `Good — stay with that for a moment. Don't try to name it or explain it yet. Just notice where you feel it in your body. Is it in your chest? Your stomach? Your throat? The body always knows before the mind does.`,
+
+  // Fear response — they can't feel it or deflect
+  cantFeelFear: `That's okay — most people can't at first. We've spent so long in our heads that the body becomes unfamiliar territory. Let's try a different way in. Think of a situation recently where you felt uncomfortable or out of place. Can you bring that moment to mind?`,
+
+  // General explore / curiosity
+  generalExplore: `I'm glad you're curious — that's exactly the right place to start. Let me ask you something simple first. Have you ever come across the Enneagram before, or taken any kind of test?`,
+
+  // Fallback
+  fallback: `Take your time — there's no rush here. Tell me a little more about what brought you here today, and we'll find the right place to begin.`,
+};
+
+// ── KEYWORD MATCHING ──────────────────────────────────────────────
+
+function detectIntent(text) {
+  const t = text.toLowerCase();
+
+  // Has done the test — look for number mentions first
+  const numberMatch = t.match(/\b(type\s*)?(one|two|three|four|five|six|seven|eight|nine|1|2|3|4|5|6|7|8|9)\b/);
+  if (numberMatch) return { intent: 'hasDoneTest', number: numberMatch[0] };
+
+  // Yes / has done test
+  if (/\b(yes|yep|yup|i have|i did|i've|ive|took|taken|done it|did it|familiar|know it|heard of)\b/.test(t))
+    return { intent: 'hasDoneTest' };
+
+  // No / has not done test
+  if (/\b(no|nope|never|not yet|haven't|havent|i haven|first time|new to|don't know|dont know|no idea|not sure what)\b/.test(t))
+    return { intent: 'hasNotDoneTest' };
+
+  // Loves their number
+  if (/\b(love|perfect|exactly|spot on|resonates|so me|that's me|thats me|100|totally|completely|absolutely)\b/.test(t))
+    return { intent: 'lovesNumber' };
+
+  // Doesn't think it's right
+  if (/\b(wrong|not right|don't think|dont think|not me|doesn't fit|doesnt fit|not accurate|disagree|incorrect)\b/.test(t))
+    return { intent: 'doesntFit' };
+
+  // Doesn't care about number
+  if (/\b(don't care|dont care|doesn't matter|doesnt matter|just want|understand myself|know myself|self aware)\b/.test(t))
+    return { intent: 'doesntCare' };
+
+  // Not sure
+  if (/\b(not sure|unsure|maybe|partly|some of it|bits of it|sort of|kind of|mixed|confused)\b/.test(t))
+    return { intent: 'notSure' };
+
+  // Chooses Truity
+  if (/\b(truity|test|take the test|do the test|first option|option 1)\b/.test(t))
+    return { intent: 'choosesTruity' };
+
+  // Chooses guide
+  if (/\b(guide|fearless|download|second option|option 2|skip the test)\b/.test(t))
+    return { intent: 'choosesGuide' };
+
+  // Can feel fear
+  if (/\b(yes|i can|feel it|i feel|chest|stomach|throat|body|anxiety|tight|heavy)\b/.test(t) && conversationState === 'fearQuestion')
+    return { intent: 'feelsFear' };
+
+  // Can't feel fear
+  if (/\b(no|can't|cant|don't feel|dont feel|not sure|nothing|numb|don't know|dont know)\b/.test(t) && conversationState === 'fearQuestion')
+    return { intent: 'cantFeelFear' };
+
+  // General curiosity / explore
+  if (/\b(curious|explore|learn|understand|find out|discover|want to know|help me)\b/.test(t))
+    return { intent: 'generalExplore' };
+
+  return { intent: 'fallback' };
+}
+
+// ── SEND MESSAGE ──────────────────────────────────────────────────
 
 function sendMessage() {
-  const input = document.getElementById("input");
-  const chat = document.getElementById("chat");
+  const input = document.getElementById('input');
+  const chat = document.getElementById('chat');
   const userMessage = input.value.trim();
   if (!userMessage) return;
 
+  // First message housekeeping
   if (firstMessage) {
     firstMessage = false;
-    input.placeholder = "Your turn...";
-    document.getElementById("input-label").style.display = "block";
+    input.placeholder = 'Your turn...';
+    document.getElementById('input-label').style.display = 'block';
   }
 
-  const userDiv = document.createElement("div");
-  userDiv.className = "message user";
+  // Show user message
+  const userDiv = document.createElement('div');
+  userDiv.className = 'message user';
   userDiv.textContent = userMessage;
   chat.appendChild(userDiv);
+  input.value = '';
+  chat.scrollTop = chat.scrollHeight;
 
-  fetch("/api/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: userMessage })
-  })
-  .then(res => res.json())
-  .then(data => {
-    const aiDiv = document.createElement("div");
-    aiDiv.className = "message ai";
-    aiDiv.textContent = data.reply;
+  // Show typing indicator
+  const typing = document.createElement('div');
+  typing.className = 'typing';
+  typing.textContent = '· · ·';
+  chat.appendChild(typing);
+  chat.scrollTop = chat.scrollHeight;
+
+  // Detect intent and respond
+  setTimeout(() => {
+    chat.removeChild(typing);
+
+    const { intent, number } = detectIntent(userMessage);
+
+    // Track number if mentioned
+    if (number) userNumber = number;
+
+    // Update conversation state
+    if (intent === 'doesntCare') conversationState = 'fearQuestion';
+    else if (intent === 'hasDoneTest') conversationState = 'awaitingFeeling';
+    else if (intent === 'hasNotDoneTest') conversationState = 'awaitingChoice';
+
+    // Get response text
+    let responseText = responses[intent] || responses.fallback;
+
+    // Personalise with number if we have it
+    if (userNumber) {
+      responseText = responseText.replace('[number]', userNumber);
+    } else {
+      responseText = responseText.replace('[number]', 'that type');
+    }
+
+    // Create AI message
+    const aiDiv = document.createElement('div');
+    aiDiv.className = 'message ai';
+    aiDiv.innerHTML = responseText.replace(/\n/g, '<br>');
     chat.appendChild(aiDiv);
     chat.scrollTop = chat.scrollHeight;
-  });
 
-  input.value = "";
+  }, 1200);
 }
 </script>
 </body>
